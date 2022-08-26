@@ -15,11 +15,11 @@
 	}, 1000)
 	let stepArr: StepsType = [
 		{
-			dom: 'card',
+			dom: '#card',
 			desc: '第一步：欢迎您来到这个APP',
 		},
 		{
-			dom: 'aa',
+			dom: '#aa',
 			desc: '第二步：',
 		},
 	]

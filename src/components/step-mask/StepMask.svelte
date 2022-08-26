@@ -1,38 +1,39 @@
 <!-- inspired by https://blog.csdn.net/oliver940910/article/details/75451847 -->
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte'
+	import { createEventDispatcher, onMount } from 'svelte'
 	import type { StepsType } from './StepMask'
+	import ToolTip from '../tooltip/Tooltip.svelte'
+	import { DEFAULT_STATE_INDE, emits } from './config'
+	import { useState, useToggle } from './util'
 	const dispatch = createEventDispatcher()
 
-	const emits = {
-		next: 'next', // 每点击下一步时触发
-		finish: 'finish', // 结束时触发
-		updateState: 'updateState', // 状态外围管理切换时,实时更新状态
-	}
-
-	const DEFAULT_STATE_INDE = 0 // 默认初始状态
-
 	export let gutter = 5 // 蒙层镂空区域 比 待镂空元素本身 大多少
-	export let show: Boolean = false // 展示step mask
+	export let show: boolean = false // 展示step mask
 	export let steps: StepsType = [] // step 列表
 	export let stateIndex = DEFAULT_STATE_INDE // 当前状态下标
 
-	let maskDiv
+	let markWrapDom
 	let tipDiv
 
-	const setMask = (arr: StepsType) => {
-		if (arr.length === 0) {
-			maskDiv.style.display = 'none'
-			return
-		}
+	const [currentStep, setStep] = useState(steps?.[stateIndex])
+	let currentDom = null
+	const setDom = (value: any) => (currentDom = value)
+	onMount(() => {
+		const dom = document.querySelector(currentStep.dom)
+		setDom(dom)
+	})
+	$: hasSteps = !!steps.length
 
+	const setMask = () => {
+		console.log(show, hasSteps)
+		if (!hasSteps) return console.log('no steps')
+		const dom = currentDom
+		if (!dom) return console.log('no default dom')
 		// 获得要cover的元素的信息
-		const { dom, desc = '' } = arr[0]
-		var ele = document.getElementById(dom)
-		var eleWidth = ele.offsetWidth
-		var eleHeight = ele.offsetHeight
-		var eleLeft = ele.offsetLeft
-		var eleTop = ele.offsetTop
+		var eleWidth = dom.offsetWidth
+		var eleHeight = dom.offsetHeight
+		var eleLeft = dom.offsetLeft
+		var eleTop = dom.offsetTop
 		console.log('待镂空元素: ', eleWidth, eleHeight, eleLeft, eleTop)
 
 		// 获取屏幕大小，包括滚动区域
@@ -40,21 +41,15 @@
 		var scrollHeight = document.body.scrollHeight
 
 		/****************   为Mask设置css   ****************/
-		maskDiv.style.width = scrollWidth + 'px'
-		maskDiv.style.height = scrollHeight + 'px'
-		maskDiv.style.position = 'absolute'
-		maskDiv.style.left = 0
-		maskDiv.style.top = 0
-		maskDiv.style.display = 'block'
-		maskDiv.style.boxSizing = 'border-box'
+		console.log('markWrapDom', markWrapDom)
+		markWrapDom.style.width = scrollWidth + 'px'
+		markWrapDom.style.height = scrollHeight + 'px'
 
-		maskDiv.style.borderColor = 'rgba(0, 0, 0, 0.75)'
-		maskDiv.style.borderStyle = 'solid'
-		maskDiv.style.borderLeftWidth = eleLeft - gutter + 'px'
-		maskDiv.style.borderRightWidth =
+		markWrapDom.style.borderLeftWidth = eleLeft - gutter + 'px'
+		markWrapDom.style.borderRightWidth =
 			scrollWidth - eleWidth - eleLeft - gutter + 'px'
-		maskDiv.style.borderTopWidth = eleTop - gutter + 'px'
-		maskDiv.style.borderBottomWidth =
+		markWrapDom.style.borderTopWidth = eleTop - gutter + 'px'
+		markWrapDom.style.borderBottomWidth =
 			scrollHeight - eleHeight - eleTop - gutter + 'px'
 
 		// 自定义区域位置 todo 有可能镂空区域比较靠下，这时候这里就太靠下了
@@ -63,30 +58,37 @@
 
 		/****************   为Mask设置desc   ****************/
 		var maskDesc = document.getElementById('mask-desc')
-		maskDesc.innerHTML = desc
+		maskDesc.innerHTML = currentStep.desc
 
 		/****************   绑定next事件   ****************/
 		var nextBtn = document.getElementById('next-step-btn')
 		nextBtn.onclick = function () {
-			arr.shift()
-			setMask(arr)
+			steps.shift()
+			setMask()
 		}
 	}
-
-	$: if (show) {
-		console.log('show', show)
-		setMask(steps)
+	$: {
+		console.log(222, show && hasSteps)
+		show && hasSteps && setMask()
 	}
 </script>
 
-<div bind:this={maskDiv} style="display: none">
-	<div class="mask-tip" bind:this={tipDiv}>
-		<span id="mask-desc" class="mask-tip-desc" />
-		<button id="next-step-btn" class="mask-tip-btn">下一步</button>
+<ToolTip text={currentStep.desc}>
+	<div class="mask-wrap" bind:this={markWrapDom}>
+		<!-- <span id="mask-desc" class="mask-tip-desc" />
+		<button id="next-step-btn" class="mask-tip-btn">下一步</button> -->
 	</div>
-</div>
+</ToolTip>
 
 <style lang="scss">
+	.mask-wrap {
+		box-sizing: border-box;
+		position: fixed;
+		top: 0;
+		left: 0;
+		border-color: rgba(0, 0, 0, 0.75);
+		border-style: solid;
+	}
 	.mask-tip {
 		min-width: 175px;
 		text-align: center;

@@ -12,7 +12,7 @@ export default defineConfig(({ command, mode }) => {
       alias: [
         { find: '@', replacement: path.resolve(__dirname, 'src') },
       ],
-    },
+    }
   };
 
   if (command === 'serve') {
