@@ -9,28 +9,28 @@
 
 	// toast('这是toast内容', 1500);
 
-	let isStart = false
-	setTimeout(() => {
-		isStart = true
-	}, 1000)
-	let stepArr: StepsType = [
-		{
-			dom: '#card',
-			desc: '第一步：欢迎您来到这个APP',
-		},
-		{
-			dom: '#aa',
-			desc: '第二步：',
-		},
-	]
+  let isStart = false;
+  setTimeout(() => {
+     isStart = true;
+  }, 1000);
+  const stepArr = [
+    {
+      id: 'card',
+      desc: '第一步：欢迎您来到这个APP'
+    },
+    {
+      id: 'aa',
+      desc: '第二步：'
+    }
+  ];
 </script>
 
 <div class="card" id="card">
 	<Counter />
 </div>
 <!--<Marquee {data}></Marquee>-->
-<div id="aa" style="width: 400px; margin: 50px">aa</div>
-<StepMask bind:show={isStart} bind:steps={stepArr} />
+<div id="aa" style="width: 400px; margin: 50px"> aa </div>
+<StepMask isStart="{isStart}" stepArr="{stepArr}"></StepMask>
 
 <style lang="less">
 	.card {
