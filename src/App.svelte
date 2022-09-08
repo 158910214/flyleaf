@@ -2,7 +2,7 @@
 	import Counter from '@/components/Counter.svelte'
 	import Marquee from '@/components/Marquee.svelte'
 	import { toast } from '@/components/toast'
-	import StepMask from '@/components/StepMask.svelte'
+	import StepMask from '@/components/step-mask/StepMask.svelte'
 
 	const data = ['item1', 'item2', 'item3']
 
@@ -14,11 +14,11 @@
 	}, 1000)
 	const stepArr = [
 		{
-			id: 'card',
+			dom: '.card',
 			desc: '第一步：欢迎您来到这个APP',
 		},
 		{
-			id: 'aa',
+			dom: '#aa',
 			desc: '第二步：',
 		},
 	]
@@ -31,7 +31,7 @@
 <!--<Marquee {data}></Marquee>-->
 <div id="aa" style="width: 400px; margin: 50px">aa</div>
 
-<StepMask {isStart} {stepArr} />
+<StepMask show={isStart} steps={stepArr} />
 
 <style lang="less">
 	.card {

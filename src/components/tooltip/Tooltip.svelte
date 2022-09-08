@@ -13,6 +13,9 @@
 			if (alwaysShow) return
 			showTipContent = flag
 		}
+	$: if (alwaysShow === false) {
+		tigger(false)
+	}
 </script>
 
 <div class="tooltip">

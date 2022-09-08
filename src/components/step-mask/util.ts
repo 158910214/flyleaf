@@ -1,13 +1,15 @@
+import { writable } from 'svelte/store'
+
 export const stateFactorry = (stateMap?: any[]) => (defaultState?: any) => {
   let hasFirstState: boolean
   let hasDefaultState: boolean
-  let firstState = stateMap?.[0]
+  let firstState = writable(stateMap?.[0])
 
   $: hasFirstState = firstState !== undefined
   $: hasDefaultState = defaultState !== undefined
 
   let state = !hasDefaultState && hasFirstState ? firstState : defaultState
-  const setState = (value: any) => state = value
+  const setState = firstState.set
 
   const reset = () => setState(defaultState)
 

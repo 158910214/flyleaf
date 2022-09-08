@@ -22,3 +22,5 @@ export const useRect = (element: Element | Window) => {
 
   return makeDOMRect(0, 0);
 }
+
+export const useDocumentRect = () => useRect(document.documentElement)
