@@ -32,7 +32,6 @@
 <div id="aa" style="width: 400px; margin: 50px">aa</div>
 
 <StepMask show={isStart} steps={stepArr} />
-
 <style lang="less">
 	.card {
 		background-color: red;
